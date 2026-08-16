@@ -339,4 +339,50 @@ export class BinanceAPI {
       executedQty: cleanQty
     };
   }
+
+  // Private Signed: Fetch live open orders directly from Binance
+  static async getOpenOrders(symbol = null) {
+    const { apiKey, apiSecret } = this.getCredentials();
+    if (!apiKey || !apiSecret) return [];
+
+    const baseUrl = this.getBaseUrl();
+    const timestamp = Date.now();
+    let query = `timestamp=${timestamp}`;
+    if (symbol) query += `&symbol=${symbol.toUpperCase()}`;
+
+    const signature = this.signQuery(query, apiSecret);
+    const fullUrl = `${baseUrl}/api/v3/openOrders?${query}&signature=${signature}`;
+
+    try {
+      const res = await axios.get(fullUrl, {
+        headers: { 'X-MBX-APIKEY': apiKey },
+        timeout: 6000
+      });
+      return res.data;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  // Private Signed: Fetch all historical orders directly from Binance
+  static async getAllOrders(symbol = 'BTCUSDT', limit = 20) {
+    const { apiKey, apiSecret } = this.getCredentials();
+    if (!apiKey || !apiSecret) return [];
+
+    const baseUrl = this.getBaseUrl();
+    const timestamp = Date.now();
+    const query = `symbol=${symbol.toUpperCase()}&limit=${limit}&timestamp=${timestamp}`;
+    const signature = this.signQuery(query, apiSecret);
+    const fullUrl = `${baseUrl}/api/v3/allOrders?${query}&signature=${signature}`;
+
+    try {
+      const res = await axios.get(fullUrl, {
+        headers: { 'X-MBX-APIKEY': apiKey },
+        timeout: 6000
+      });
+      return res.data;
+    } catch (e) {
+      return [];
+    }
+  }
 }

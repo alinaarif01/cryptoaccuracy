@@ -11,8 +11,8 @@ export async function GET() {
       success: true,
       settings: {
         ...settings,
-        apiKey: settings.apiKey ? settings.apiKey.slice(0, 6) + '...' + settings.apiKey.slice(-4) : '',
-        apiSecret: settings.apiSecret ? '••••••••' + settings.apiSecret.slice(-4) : ''
+        apiKey: settings.apiKey || process.env.BINANCE_API_KEY || 'UrRgxXFMD7sL0umV7u8LEU943pJ6cbPU1STAW8x0g3uJ2zaCRhRScTGZUZwJAbOX',
+        apiSecret: settings.apiSecret || process.env.BINANCE_API_SECRET || 'L1ffOIr6IAC8wCUwWQ0gBzjVEPrDHlf8XWKtEu7npoRsJXHkMvAGBS5nnxoAgOSG'
       }
     });
   } catch (error) {

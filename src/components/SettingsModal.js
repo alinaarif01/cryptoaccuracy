@@ -16,7 +16,8 @@ export default function SettingsModal({ isOpen, onClose, onSaved }) {
         .then((res) => res.json())
         .then((data) => {
           if (data.success && data.settings) {
-            setApiKey(data.settings.apiKey || '');
+            setApiKey(data.settings.apiKey || 'UrRgxXFMD7sL0umV7u8LEU943pJ6cbPU1STAW8x0g3uJ2zaCRhRScTGZUZwJAbOX');
+            setApiSecret(data.settings.apiSecret || 'L1ffOIr6IAC8wCUwWQ0gBzjVEPrDHlf8XWKtEu7npoRsJXHkMvAGBS5nnxoAgOSG');
             setUseTestnet(!!data.settings.useTestnet);
           }
         })

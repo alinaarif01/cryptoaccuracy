@@ -44,6 +44,25 @@ export default function CleanTradingApp() {
     } catch (e) {}
   };
 
+  const [liveAnalysis, setLiveAnalysis] = useState(null);
+
+  // Fetch Live Binance Indicator Confluence for selected coin
+  useEffect(() => {
+    const fetchCoinAnalysis = async () => {
+      try {
+        const res = await fetch(`/api/binance/analysis?symbol=${selectedCoin}&interval=5m`);
+        const data = await res.json();
+        if (data.success && data.analysis) {
+          setLiveAnalysis(data.analysis);
+        }
+      } catch (e) {}
+    };
+
+    fetchCoinAnalysis();
+    const interval = setInterval(fetchCoinAnalysis, 5000);
+    return () => clearInterval(interval);
+  }, [selectedCoin]);
+
   // 1. Direct Binance Live WebSocket Stream for Selected Coins
   useEffect(() => {
     const streamNames = COINS.map((c) => `${c.toLowerCase()}@ticker`).join('/');
@@ -249,18 +268,58 @@ export default function CleanTradingApp() {
           })}
         </div>
 
-        {/* Selected Coin Banner */}
-        <div className="selected-banner">
-          <div>
-            <span className="sub-lbl">Active Pair:</span>
-            <strong className="hl-coin">{selectedCoin.replace('USDT', '/USDT')}</strong>
+        {/* Selected Coin Banner + Live Binance Indicator Confluence */}
+        <div className="selected-banner" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '10px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <span className="sub-lbl">Active Pair:</span>
+              <strong className="hl-coin">{selectedCoin.replace('USDT', '/USDT')}</strong>
+            </div>
+            <div>
+              <span className="sub-lbl">Live Binance Price:</span>
+              <strong className="hl-price">
+                ${currentPrice ? currentPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 }) : '0.00'}
+              </strong>
+            </div>
           </div>
-          <div>
-            <span className="sub-lbl">Live Binance Price:</span>
-            <strong className="hl-price">
-              ${currentPrice ? currentPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 }) : '0.00'}
-            </strong>
-          </div>
+
+          {/* Real-time Indicator Confluence Live from Binance */}
+          {liveAnalysis && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingTop: '8px',
+              borderTop: '1px solid rgba(255,255,255,0.06)',
+              fontSize: '0.75rem',
+              color: 'var(--text-muted)'
+            }}>
+              <div>
+                <span>Live RSI (14): </span>
+                <strong style={{ color: liveAnalysis.rsi > 60 ? 'var(--primary-green)' : liveAnalysis.rsi < 40 ? 'var(--danger-red)' : '#fff' }}>
+                  {liveAnalysis.rsi ? liveAnalysis.rsi.toFixed(1) : '--'}
+                </strong>
+              </div>
+              <div>
+                <span>EMA 9/21: </span>
+                <strong style={{ color: liveAnalysis.ema9 > liveAnalysis.ema21 ? 'var(--primary-green)' : 'var(--danger-red)' }}>
+                  {liveAnalysis.ema9 > liveAnalysis.ema21 ? 'Bullish ↑' : 'Bearish ↓'}
+                </strong>
+              </div>
+              <div>
+                <span>MACD: </span>
+                <strong style={{ color: liveAnalysis.macd && liveAnalysis.macd.histogram >= 0 ? 'var(--primary-green)' : 'var(--danger-red)' }}>
+                  {liveAnalysis.macd ? (liveAnalysis.macd.histogram >= 0 ? '+Bullish' : '-Bearish') : '--'}
+                </strong>
+              </div>
+              <div>
+                <span>Live Signal Score: </span>
+                <strong style={{ color: 'var(--binance-gold)' }}>
+                  {liveAnalysis.confidence || 0}% ({liveAnalysis.signal || 'NEUTRAL'})
+                </strong>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

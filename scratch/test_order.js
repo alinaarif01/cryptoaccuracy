@@ -1,20 +1,21 @@
 const crypto = require('crypto');
 const axios = require('axios');
 
-const apiKey = 'OCobwBkYlnYGWKMEbkhobnRYMs9mIMw8XgMuPwHRe6oWZ130PqF3gYqXNhiAbMRG';
-const apiSecret = '0Lw5wOhDzwdDv1LY5NLqAFZnmXYbP3ajT5YdYRTrSBR7nJUULTwXJXpG50mxOVzT';
+const apiKey = 'UrRgxXFMD7sL0umV7u8LEU943pJ6cbPU1STAW8x0g3uJ2zaCRhRScTGZUZwJAbOX';
+const apiSecret = 'L1ffOIr6IAC8wCUwWQ0gBzjVEPrDHlf8XWKtEu7npoRsJXHkMvAGBS5nnxoAgOSG';
 
 function sign(queryString, secret) {
   return crypto.createHmac('sha256', secret).update(queryString).digest('hex');
 }
 
-async function testOrder() {
+async function testPermission() {
+  console.log('Testing Binance API Permissions with Updated Keys...');
   const timestamp = Date.now();
   const params = {
     symbol: 'BTCUSDT',
     side: 'BUY',
     type: 'MARKET',
-    quoteOrderQty: 15,
+    quoteOrderQty: 10,
     timestamp
   };
 
@@ -23,13 +24,14 @@ async function testOrder() {
 
   try {
     const res = await axios.post(`https://api.binance.com/api/v3/order?${queryString}&signature=${signature}`, null, {
-      headers: { 'X-MBX-APIKEY': apiKey }
+      headers: { 'X-MBX-APIKEY': apiKey },
+      timeout: 6000
     });
-    console.log('Order Response:', res.data);
+    console.log('✅ ORDER SUCCESS:', res.data);
   } catch (err) {
-    console.log('Error Status:', err.response?.status);
-    console.log('Error Data:', err.response?.data);
+    console.log('Status Code:', err.response?.status);
+    console.log('Response Body:', err.response?.data);
   }
 }
 
-testOrder();
+testPermission();

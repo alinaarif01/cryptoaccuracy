@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crypto Accuracy - Binance Manual & Auto Trading System</title>
+  <meta name="description" content="High-accuracy cryptocurrency trading dashboard with instant Manual controls and 85% Target Win-Rate Autonomous Trading Bot for Binance.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- TradingView Lightweight Charts -->
+  <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+<body class="dark-theme">
+  <!-- Top Navigation -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo-container">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+            <polyline points="16 7 22 7 22 13"></polyline>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="brand-title">CRYPTO <span class="accent-text">ACCURACY</span></span>
+          <span class="brand-subtitle">BINANCE TERMINAL PRO</span>
+        </div>
+      </div>
+      <div class="live-badge">
+        <span class="pulse-dot"></span>
+        <span class="badge-text" id="wsStatus">LIVE WS CONNECTED</span>
+      </div>
+    </div>
+
+    <!-- Live Market Ticker Strip -->
+    <div class="ticker-strip" id="tickerStrip">
+      <!-- Populated dynamically -->
+      <div class="ticker-item placeholder">Loading live Binance market tickers...</div>
+    </div>
+
+    <div class="header-right">
+      <div class="mode-pill" id="modePill" onclick="openSettingsModal()">
+        <span class="mode-tag" id="modeTag">PAPER SIM</span>
+        <span class="mode-icon">⚙️</span>
+      </div>
+      <div class="balance-card">
+        <span class="balance-label">WALLET BALANCE</span>
+        <span class="balance-value" id="walletBalance">$10,000.00 <span class="currency">USDT</span></span>
+      </div>
+      <button class="settings-btn" onclick="openSettingsModal()" title="API & Mode Settings" id="openSettingsBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="dashboard-grid">
+    
+    <!-- LEFT COLUMN: CONTROLS & ENGINES -->
+    <section class="controls-column">
+      
+      <!-- 1. COIN SELECTION PANEL -->
+      <div class="panel-card coin-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="icon">🪙</span>
+            <h3>SELECT TRADING COIN</h3>
+          </div>
+          <div class="coin-search-wrap">
+            <input type="text" id="coinSearchInput" placeholder="Search (e.g. BTC, SOL)..." autocomplete="off">
+          </div>
+        </div>
+
+        <!-- Quick Coin Select Buttons -->
+        <div class="coin-chips-container" id="coinChips">
+          <button class="coin-chip active" data-symbol="BTCUSDT">
+            <span class="coin-name">BTC</span>
+            <span class="coin-price" id="chip-BTCUSDT">$--</span>
+          </button>
+          <button class="coin-chip" data-symbol="ETHUSDT">
+            <span class="coin-name">ETH</span>
+            <span class="coin-price" id="chip-ETHUSDT">$--</span>
+          </button>
+          <button class="coin-chip" data-symbol="SOLUSDT">
+            <span class="coin-name">SOL</span>
+            <span class="coin-price" id="chip-SOLUSDT">$--</span>
+          </button>
+          <button class="coin-chip" data-symbol="BNBUSDT">
+            <span class="coin-name">BNB</span>
+            <span class="coin-price" id="chip-BNBUSDT">$--</span>
+          </button>
+          <button class="coin-chip" data-symbol="DOGEUSDT">
+            <span class="coin-name">DOGE</span>
+            <span class="coin-price" id="chip-DOGEUSDT">$--</span>
+          </button>
+          <button class="coin-chip" data-symbol="XRPUSDT">
+            <span class="coin-name">XRP</span>
+            <span class="coin-price" id="chip-XRPUSDT">$--</span>
+          </button>
+        </div>
+
+        <!-- Active Coin Stats Summary -->
+        <div class="active-coin-stats" id="activeCoinSummary">
+          <div class="stat-box primary">
+            <span class="stat-label">SELECTED PAIR</span>
+            <span class="stat-val coin-highlight" id="activeSymbolDisplay">BTC/USDT</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">BINANCE LIVE PRICE</span>
+            <span class="stat-val price-highlight" id="activePriceDisplay">$0.00</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">24H CHANGE</span>
+            <span class="stat-val" id="activeChangeDisplay">+0.00%</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">ACCURACY SIGNAL</span>
+            <span class="stat-val signal-tag" id="activeSignalDisplay">ANALYZING...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. MANUAL TRADING CONTROL PANEL -->
+      <div class="panel-card manual-trade-panel">
+        <div class="panel-header highlight-green">
+          <div class="panel-title">
+            <span class="icon">🕹️</span>
+            <h3>MANUAL TRADE CONTROL</h3>
+          </div>
+          <span class="badge manual-badge">USER CONTROLLED</span>
+        </div>
+
+        <div class="manual-form">
+          <!-- Trade Direction Selector -->
+          <div class="direction-toggle">
+            <button class="direction-btn buy active" id="manualSideBuy" onclick="setManualSide('BUY')">
+              <span class="btn-icon">▲</span> BUY / LONG
+            </button>
+            <button class="direction-btn sell" id="manualSideSell" onclick="setManualSide('SELL')">
+              <span class="btn-icon">▼</span> SELL / SHORT
+            </button>
+          </div>
+
+          <!-- Trade Amount in USDT -->
+          <div class="input-group">
+            <div class="input-header">
+              <label for="manualAmountInput">Trade Order Amount</label>
+              <span class="avail-text">Avail: <strong id="availUsdtText">$10,000.00 USDT</strong></span>
+            </div>
+            <div class="input-with-affix">
+              <span class="affix">$</span>
+              <input type="number" id="manualAmountInput" value="50" min="5" step="5">
+              <span class="suffix">USDT</span>
+            </div>
+          </div>
+
+          <!-- Quick Amount Presets -->
+          <div class="amount-presets">
+            <button type="button" class="preset-btn" onclick="setManualAmount(25)">$25</button>
+            <button type="button" class="preset-btn active" onclick="setManualAmount(50)">$50</button>
+            <button type="button" class="preset-btn" onclick="setManualAmount(100)">$100</button>
+            <button type="button" class="preset-btn" onclick="setManualAmount(250)">$250</button>
+            <button type="button" class="preset-btn" onclick="setManualAmountPercent(50)">50% Max</button>
+          </div>
+
+          <!-- Target TP & SL Settings for Manual Order -->
+          <div class="tp-sl-grid">
+            <div class="tpsl-input-wrap">
+              <label for="manualTpInput">🎯 Take Profit (%)</label>
+              <input type="number" id="manualTpInput" value="2.0" step="0.1" min="0.1">
+            </div>
+            <div class="tpsl-input-wrap">
+              <label for="manualSlInput">🛑 Stop Loss (%)</label>
+              <input type="number" id="manualSlInput" value="1.2" step="0.1" min="0.1">
+            </div>
+          </div>
+
+          <!-- MAIN MANUAL TRADE ACTION BUTTONS -->
+          <div class="manual-actions-container">
+            <button class="action-btn start-trade-btn" id="startTradeBtn" onclick="handleStartManualTrade()">
+              <div class="btn-content">
+                <span class="btn-title">🚀 START TRADE</span>
+                <span class="btn-sub">Open Order on Binance</span>
+              </div>
+            </button>
+            
+            <button class="action-btn close-trade-btn" id="closeTradeBtn" onclick="handleCloseManualTrade()">
+              <div class="btn-content">
+                <span class="btn-title">🛑 CLOSE TRADE</span>
+                <span class="btn-sub">Exit Current Position</span>
+              </div>
+            </button>
+          </div>
+
+          <div class="manual-status-note" id="manualStatusNote">
+            Ready to execute. Select coin and click <strong>START TRADE</strong> to place order.
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. AUTO TRADING BOT PANEL -->
+      <div class="panel-card auto-trade-panel">
+        <div class="panel-header highlight-cyan">
+          <div class="panel-title">
+            <span class="icon">⚡</span>
+            <h3>AUTO TRADING ENGINE</h3>
+          </div>
+          <div class="target-accuracy-pill" title="Targeting 85% profit accuracy across trading batches">
+            <span>🎯 85% PROFIT TARGET</span>
+          </div>
+        </div>
+
+        <div class="auto-trade-body">
+          <!-- Master Switch -->
+          <div class="master-switch-card">
+            <div class="switch-info">
+              <span class="switch-title">AUTONOMOUS BOT</span>
+              <span class="switch-desc" id="botStatusDesc">Bot is currently IDLE. Turn ON for automatic trading.</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="autoTradeToggle" onchange="handleToggleAutoTrade(this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <!-- Auto Trading Live Stats -->
+          <div class="bot-metrics-grid">
+            <div class="metric-card">
+              <span class="m-label">BATCH ACCURACY</span>
+              <span class="m-val highlight" id="botWinRate">--%</span>
+              <span class="m-sub">Target: 85%+</span>
+            </div>
+            <div class="metric-card">
+              <span class="m-label">AUTO PROFIT</span>
+              <span class="m-val" id="botProfit">+$0.00</span>
+              <span class="m-sub" id="botTradeCount">0 Trades</span>
+            </div>
+            <div class="metric-card">
+              <span class="m-label">STRATEGY</span>
+              <span class="m-val-sm">RSI + EMA 9/21</span>
+              <span class="m-sub">Confluence Scalper</span>
+            </div>
+          </div>
+
+          <!-- Bot Scan Coins Selection -->
+          <div class="bot-coins-config">
+            <span class="config-title">Auto-Traded Pairs:</span>
+            <div class="bot-coin-tags" id="botCoinsList">
+              <span class="bot-tag active">BTCUSDT</span>
+              <span class="bot-tag active">ETHUSDT</span>
+              <span class="bot-tag active">SOLUSDT</span>
+              <span class="bot-tag active">BNBUSDT</span>
+              <span class="bot-tag active">DOGEUSDT</span>
+              <span class="bot-tag active">XRPUSDT</span>
+            </div>
+          </div>
+
+          <!-- Auto Bot Settings Accordion -->
+          <details class="bot-settings-details">
+            <summary>⚙️ Customize Bot Strategy Parameters</summary>
+            <div class="bot-custom-form">
+              <div class="bot-form-row">
+                <label>Amount per Auto Trade ($):</label>
+                <input type="number" id="botAmountInput" value="50" min="10" step="10">
+              </div>
+              <div class="bot-form-row">
+                <label>Take Profit Target (%):</label>
+                <input type="number" id="botTpInput" value="1.8" step="0.1" min="0.5">
+              </div>
+              <div class="bot-form-row">
+                <label>Stop Loss Limit (%):</label>
+                <input type="number" id="botSlInput" value="1.0" step="0.1" min="0.5">
+              </div>
+              <div class="bot-form-row">
+                <label>Min Signal Confidence (%):</label>
+                <input type="number" id="botConfidenceInput" value="75" min="50" max="95">
+              </div>
+              <button class="save-bot-btn" onclick="saveBotSettings()">Save Strategy Config</button>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN: CHART, OPEN POSITIONS, STATS & LOGS -->
+    <section class="display-column">
+      
+      <!-- 1. LIVE CHART CARD -->
+      <div class="panel-card chart-panel">
+        <div class="chart-header">
+          <div class="chart-title-wrap">
+            <h2 id="chartSymbolTitle">BTC/USDT 5M LIVE CHART</h2>
+            <span class="chart-price-live" id="chartPriceLive">$0.00</span>
+          </div>
+          <div class="chart-controls">
+            <div class="timeframe-selector" id="timeframeSelector">
+              <button class="tf-btn" data-tf="1m" onclick="changeTimeframe('1m')">1m</button>
+              <button class="tf-btn active" data-tf="5m" onclick="changeTimeframe('5m')">5m</button>
+              <button class="tf-btn" data-tf="15m" onclick="changeTimeframe('15m')">15m</button>
+              <button class="tf-btn" data-tf="1h" onclick="changeTimeframe('1h')">1h</button>
+            </div>
+            <button class="refresh-chart-btn" onclick="loadCandlestickChart()" title="Reload Chart">🔄</button>
+          </div>
+        </div>
+        <div class="chart-wrapper" id="tradingViewChartContainer">
+          <!-- Lightweight chart mounted here -->
+        </div>
+      </div>
+
+      <!-- 2. OPEN POSITIONS & LIVE FLOATING PNL -->
+      <div class="panel-card positions-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="icon">⚡</span>
+            <h3>ACTIVE OPEN POSITIONS</h3>
+            <span class="counter-badge" id="openPositionsCount">0</span>
+          </div>
+          <div class="floating-pnl-summary">
+            <span>Total Floating PnL:</span>
+            <strong class="floating-pnl-val" id="totalFloatingPnl">$0.00</strong>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table" id="positionsTable">
+            <thead>
+              <tr>
+                <th>Coin Pair</th>
+                <th>Type / Side</th>
+                <th>Entry Price</th>
+                <th>Current Price</th>
+                <th>Order Size</th>
+                <th>Floating PnL ($ / %)</th>
+                <th>Target TP / SL</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="positionsTableBody">
+              <tr class="empty-row">
+                <td colspan="8">No active open positions. Start a trade manually or turn on Auto Trading.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 3. PERFORMANCE & 85% PROFIT TARGET ACCURACY -->
+      <div class="stats-row">
+        <!-- Target Profit Progress Card -->
+        <div class="panel-card accuracy-card">
+          <div class="acc-header">
+            <h4>🎯 85% PROFIT ACCURACY GOAL</h4>
+            <span class="acc-badge" id="accTargetStatus">MONITORING</span>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="winRateProgressBar" style="width: 0%"></div>
+          </div>
+          <div class="progress-labels">
+            <span id="currentWinRateText">0.0% Current Win Rate</span>
+            <span>Target: 85.0%</span>
+          </div>
+          <p class="acc-note">Bot analyzes 5-7 trade rolling batches with strict RSI/EMA confluence to secure ≥ 85% positive exits.</p>
+        </div>
+
+        <!-- Analytics Overview -->
+        <div class="panel-card overview-card">
+          <div class="stat-mini-grid">
+            <div class="mini-stat">
+              <span class="mini-lbl">TOTAL TRADES</span>
+              <span class="mini-val" id="statTotalTrades">0</span>
+            </div>
+            <div class="mini-stat">
+              <span class="mini-lbl">WINNING TRADES</span>
+              <span class="mini-val text-green" id="statWins">0</span>
+            </div>
+            <div class="mini-stat">
+              <span class="mini-lbl">LOSING TRADES</span>
+              <span class="mini-val text-red" id="statLosses">0</span>
+            </div>
+            <div class="mini-stat">
+              <span class="mini-lbl">NET REVENUE</span>
+              <span class="mini-val highlight" id="statNetProfit">$0.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. BOT ACTIVITY LOG TERMINAL -->
+      <div class="panel-card terminal-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="icon">📟</span>
+            <h3>REAL-TIME BOT ACTIVITY & SIGNALS LOG</h3>
+          </div>
+          <button class="clear-log-btn" onclick="clearLocalLogs()">Clear</button>
+        </div>
+        <div class="terminal-body" id="terminalLogs">
+          <div class="log-line info"><span class="log-time">[INIT]</span> System ready. Real-time Binance feeds initialized.</div>
+        </div>
+      </div>
+
+      <!-- 5. TRADE HISTORY TABLE -->
+      <div class="panel-card history-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="icon">📜</span>
+            <h3>COMPLETED TRADE HISTORY</h3>
+          </div>
+          <button class="refresh-history-btn" onclick="fetchTradeHistory()">Refresh History</button>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" id="historyTable">
+            <thead>
+              <tr>
+                <th>Trade ID</th>
+                <th>Coin</th>
+                <th>Side</th>
+                <th>Mode</th>
+                <th>Entry Price</th>
+                <th>Exit Price</th>
+                <th>PnL ($)</th>
+                <th>PnL (%)</th>
+                <th>Outcome</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <tr class="empty-row">
+                <td colspan="9">No closed trade records yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- SETTINGS MODAL (API Keys, Mode, Balances) -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>⚙️ System & Binance API Configuration</h3>
+        <button class="close-modal-btn" onclick="closeSettingsModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Trading Execution Mode:</label>
+          <div class="mode-selection-group">
+            <label class="mode-radio-label">
+              <input type="radio" name="tradingMode" value="paper" checked>
+              <div class="radio-card">
+                <strong>🛡️ Paper Simulation</strong>
+                <p>Zero risk testing with real-time Binance prices & virtual $10,000 USDT.</p>
+              </div>
+            </label>
+            <label class="mode-radio-label">
+              <input type="radio" name="tradingMode" value="testnet">
+              <div class="radio-card">
+                <strong>🧪 Binance Testnet</strong>
+                <p>Connect with Binance Testnet API credentials.</p>
+              </div>
+            </label>
+            <label class="mode-radio-label">
+              <input type="radio" name="tradingMode" value="live">
+              <div class="radio-card">
+                <strong>🔥 Binance Live Account</strong>
+                <p>Executes real spot/futures orders on your Binance account.</p>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group" id="liveApiGroup">
+          <label for="binanceApiKey">Binance Live API Key:</label>
+          <input type="text" id="binanceApiKey" placeholder="Enter your Binance API Key">
+          
+          <label for="binanceApiSecret" style="margin-top: 10px;">Binance Live API Secret:</label>
+          <input type="password" id="binanceApiSecret" placeholder="Enter your Binance API Secret">
+          <small class="help-text">⚠️ Ensure IP access is allowed and Spot/Margin trading permissions are enabled in Binance.</small>
+        </div>
+
+        <div class="form-group" id="paperResetGroup">
+          <label>Virtual Paper Trading Balance:</label>
+          <div class="input-with-button">
+            <input type="number" id="paperBalanceInput" value="10000">
+            <button type="button" class="action-sm-btn" onclick="resetPaperBalance()">Reset to $10,000</button>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-secondary" onclick="closeSettingsModal()">Cancel</button>
+          <button class="btn-primary" onclick="saveSettingsModal()">Save Configuration</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Application Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/chart.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

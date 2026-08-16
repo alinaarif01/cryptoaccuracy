@@ -1,0 +1,27 @@
+{
+  "mode": "live",
+  "apiKey": "OCobwBkYlnYGWKMEbkhobnRYMs9mIMw8XgMuPwHRe6oWZ130PqF3gYqXNhiAbMRG",
+  "apiSecret": "0Lw5wOhDzwdDv1LY5NLqAFZnmXYbP3ajT5YdYRTrSBR7nJUULTwXJXpG50mxOVzT",
+  "useTestnet": false,
+  "paperBalance": 10000,
+  "selectedCoin": "BTCUSDT",
+  "manualTradeAmount": 50,
+  "autoTrade": {
+    "enabled": true,
+    "symbols": [
+      "BTCUSDT",
+      "ETHUSDT",
+      "SOLUSDT",
+      "BNBUSDT",
+      "DOGEUSDT",
+      "XRPUSDT"
+    ],
+    "tradeAmountUsdt": 50,
+    "takeProfitPercent": 1.8,
+    "stopLossPercent": 1,
+    "maxOpenTrades": 5,
+    "targetWinRate": 85,
+    "timeframe": "5m",
+    "minConfidence": 75
+  }
+}

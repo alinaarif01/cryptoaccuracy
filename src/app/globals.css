@@ -1,0 +1,579 @@
+:root {
+  --bg-main: #0a0d14;
+  --bg-card: #121826;
+  --bg-card-secondary: #182236;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-highlight: rgba(243, 186, 47, 0.4);
+  
+  --primary-green: #00f59b;
+  --danger-red: #ff3b69;
+  --binance-gold: #f3ba2f;
+  --accent-cyan: #00d8ff;
+  
+  --text-main: #f0f4fc;
+  --text-muted: #8fa0c0;
+  
+  --font-main: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: var(--font-main);
+  min-height: 100vh;
+  padding: 24px 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.clean-container {
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ==================== CLEAN HEADER ==================== */
+.clean-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.clean-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-dot {
+  width: 10px;
+  height: 10px;
+  background-color: var(--primary-green);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--primary-green);
+}
+
+.clean-brand h2 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.clean-settings-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clean-settings-btn:hover {
+  border-color: var(--binance-gold);
+  color: var(--binance-gold);
+}
+
+/* ==================== CARD ==================== */
+.clean-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.card-label {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--binance-gold);
+  letter-spacing: 0.8px;
+}
+
+/* ==================== 1. COIN SELECTION ==================== */
+.coin-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 500px) {
+  .coin-buttons-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.clean-coin-btn {
+  background: var(--bg-card-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: all 0.2s;
+  color: var(--text-main);
+}
+
+.clean-coin-btn:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: #1e2b45;
+}
+
+.clean-coin-btn.active {
+  background: linear-gradient(135deg, rgba(243, 186, 47, 0.15), rgba(0, 245, 155, 0.12));
+  border-color: var(--binance-gold);
+  box-shadow: 0 0 14px rgba(243, 186, 47, 0.25);
+}
+
+.clean-coin-btn .coin-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.clean-coin-btn .coin-p {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+.clean-coin-btn .coin-c {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.pos { color: var(--primary-green) !important; }
+.neg { color: var(--danger-red) !important; }
+.text-green { color: var(--primary-green) !important; }
+.text-red { color: var(--danger-red) !important; }
+
+.selected-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card-secondary);
+  border: 1px solid var(--border-color);
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+}
+
+.sub-lbl {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  display: block;
+}
+
+.hl-coin {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--binance-gold);
+}
+
+.hl-price {
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #fff;
+}
+
+/* ==================== 2. MANUAL TRADING ==================== */
+.trade-inputs-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.side-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.side-btn {
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: var(--bg-card-secondary);
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.side-btn.buy.active {
+  background: rgba(0, 245, 155, 0.18);
+  border-color: var(--primary-green);
+  color: var(--primary-green);
+}
+
+.side-btn.sell.active {
+  background: rgba(255, 59, 105, 0.18);
+  border-color: var(--danger-red);
+  color: var(--danger-red);
+}
+
+.amount-input-box {
+  display: flex;
+  align-items: center;
+  background: var(--bg-card-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0 12px;
+}
+
+.amount-input-box .usdt-prefix, .amount-input-box .usdt-suffix {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.amount-input-box input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 800;
+  padding: 10px 8px;
+  outline: none;
+}
+
+.trade-actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.btn-start-trade {
+  background: linear-gradient(135deg, #00f59b, #00b370);
+  color: #000;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 1.05rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 245, 155, 0.35);
+  transition: all 0.2s;
+}
+
+.btn-start-trade:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(0, 245, 155, 0.5);
+}
+
+.btn-close-trade {
+  background: linear-gradient(135deg, #ff3b69, #c71b44);
+  color: #fff;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 1.05rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(255, 59, 105, 0.35);
+  transition: all 0.2s;
+}
+
+.btn-close-trade:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(255, 59, 105, 0.5);
+}
+
+/* ==================== 3. AUTO TRADING ==================== */
+.auto-card {
+  border-color: rgba(243, 186, 47, 0.25);
+}
+
+.auto-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.auto-sub-text {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.accuracy-badge {
+  background: rgba(243, 186, 47, 0.15);
+  border: 1px solid var(--binance-gold);
+  color: var(--binance-gold);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.auto-toggle-btn {
+  background: var(--bg-card-secondary);
+  border: 2px solid var(--binance-gold);
+  color: var(--binance-gold);
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.auto-toggle-btn.active {
+  background: linear-gradient(135deg, var(--binance-gold), #e09f18);
+  color: #000;
+  border-color: transparent;
+  box-shadow: 0 4px 20px rgba(243, 186, 47, 0.4);
+}
+
+.bot-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.status-indicator-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--binance-gold);
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.6; }
+}
+
+/* ==================== 4. ACTIVE POSITIONS ==================== */
+.positions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pos-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card-secondary);
+  border: 1px solid var(--border-color);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+}
+
+.pos-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.pos-lbl {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-family: var(--font-main);
+}
+
+.pos-tag {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.pos-tag.buy { background: rgba(0, 245, 155, 0.2); color: var(--primary-green); }
+.pos-tag.sell { background: rgba(255, 59, 105, 0.2); color: var(--danger-red); }
+
+.clean-close-sm {
+  background: rgba(255, 59, 105, 0.2);
+  border: 1px solid var(--danger-red);
+  color: var(--danger-red);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.clean-close-sm:hover {
+  background: var(--danger-red);
+  color: #fff;
+}
+
+/* ==================== MODAL & TOASTS ==================== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 480px;
+  padding: 22px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.close-modal-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-group label {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.form-group input {
+  background: var(--bg-card-secondary);
+  border: 1px solid var(--border-color);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.form-group input:focus {
+  border-color: var(--binance-gold);
+}
+
+.help-text {
+  font-size: 0.7rem;
+  color: var(--binance-gold);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--binance-gold);
+  border: none;
+  color: #000;
+  font-weight: 800;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.toast.success { border-left: 4px solid var(--primary-green); }
+.toast.error { border-left: 4px solid var(--danger-red); }
+.toast.info { border-left: 4px solid var(--binance-gold); }

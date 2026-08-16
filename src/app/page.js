@@ -530,52 +530,6 @@ export default function CleanTradingApp() {
         </div>
       )}
 
-      {/* 5. STORED TRADE HISTORY (DB & EXECUTIONS) */}
-      {tradeHistory.length > 0 && (
-        <div className="clean-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <label className="card-label" style={{ marginBottom: 0 }}>SAVED TRADE HISTORY ({tradeHistory.length})</label>
-            <button
-              onClick={() => {
-                setTradeHistory([]);
-                localStorage.removeItem('binance_trade_db');
-              }}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: 'var(--text-muted)',
-                fontSize: '0.72rem',
-                cursor: 'pointer'
-              }}
-            >
-              Clear
-            </button>
-          </div>
-          <div className="positions-list">
-            {tradeHistory.map((t) => (
-              <div key={t.id} className="pos-item">
-                <div className="pos-col">
-                  <strong>{t.symbol}</strong>
-                  <span className={`pos-tag ${t.side === 'BUY' ? 'buy' : 'sell'}`}>{t.side}</span>
-                </div>
-                <div className="pos-col">
-                  <span className="pos-lbl">Rate:</span>
-                  <span>${t.price ? Number(t.price).toLocaleString() : '--'}</span>
-                </div>
-                <div className="pos-col">
-                  <span className="pos-lbl">Amount:</span>
-                  <span>${t.amountUsdt} USDT</span>
-                </div>
-                <div className="pos-col">
-                  <span className="pos-lbl">Time:</span>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{t.time}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Settings Modal */}
       <SettingsModal
         isOpen={isSettingsOpen}

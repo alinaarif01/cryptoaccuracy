@@ -1,5 +1,5 @@
 {
-  "mode": "paper",
+  "mode": "live",
   "apiKey": "UrRgxXFMD7sL0umV7u8LEU943pJ6cbPU1STAW8x0g3uJ2zaCRhRScTGZUZwJAbOX",
   "apiSecret": "L1ffOIr6IAC8wCUwWQ0gBzjVEPrDHlf8XWKtEu7npoRsJXHkMvAGBS5nnxoAgOSG",
   "useTestnet": false,
@@ -7,7 +7,7 @@
   "selectedCoin": "BTCUSDT",
   "manualTradeAmount": 50,
   "autoTrade": {
-    "enabled": true,
+    "enabled": false,
     "symbols": [
       "BTCUSDT",
       "ETHUSDT",

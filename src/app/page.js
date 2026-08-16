@@ -94,7 +94,6 @@ export default function CleanTradingApp() {
       const res = await fetch('/api/bot');
       const data = await res.json();
       if (data.success) {
-        setIsAutoTrading(data.isAutoTrading);
         setOpenPositions(data.positions || []);
       }
     } catch (e) {}

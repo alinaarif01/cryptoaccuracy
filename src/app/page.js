@@ -121,7 +121,11 @@ export default function CleanTradingApp() {
         showToast(`🚀 Trade Started on Binance: ${tradeSide} ${selectedCoin} ($${tradeAmount} USDT)`, 'success');
         setOpenPositions(data.positions || []);
       } else {
-        showToast(`❌ Error: ${data.error}`, 'error');
+        if (data.error && data.error.includes('balance kam hai')) {
+          showToast(`⚠️ ${data.error}`, 'error');
+        } else {
+          showToast(`❌ Error: ${data.error}`, 'error');
+        }
       }
     } catch (err) {
       showToast(`Network Error: ${err.message}`, 'error');

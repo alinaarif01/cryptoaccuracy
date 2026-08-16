@@ -3,6 +3,7 @@ import { BinanceAPI } from '../../../../lib/binance';
 import { analyzeCandles } from '../../../../lib/indicators';
 
 export const dynamic = 'force-dynamic';
+export const preferredRegion = 'fra1';
 
 export async function GET(request) {
   try {

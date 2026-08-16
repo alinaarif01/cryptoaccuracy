@@ -3,6 +3,7 @@ import { BinanceAPI } from '../../../../lib/binance';
 import { getOpenPositions, saveOpenPositions, addTradeRecord } from '../../../../lib/config';
 
 export const dynamic = 'force-dynamic';
+export const preferredRegion = 'fra1';
 
 export async function POST(request) {
   try {

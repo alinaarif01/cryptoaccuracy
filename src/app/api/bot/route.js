@@ -4,6 +4,7 @@ import { analyzeCandles } from '../../../lib/indicators';
 import { getSettings, saveSettings, getOpenPositions, saveOpenPositions, addTradeRecord, getTradeHistory } from '../../../lib/config';
 
 export const dynamic = 'force-dynamic';
+export const preferredRegion = 'fra1';
 
 export async function GET() {
   try {

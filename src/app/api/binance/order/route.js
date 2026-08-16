@@ -3,6 +3,7 @@ import { BinanceAPI } from '../../../../lib/binance';
 import { getOpenPositions, saveOpenPositions, getSettings } from '../../../../lib/config';
 
 export const dynamic = 'force-dynamic';
+export const preferredRegion = 'fra1'; // Deploy serverless function in Frankfurt, Europe
 
 export async function POST(request) {
   try {

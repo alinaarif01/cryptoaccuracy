@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { BinanceAPI } from '../../../../lib/binance';
 
 export const dynamic = 'force-dynamic';
+export const preferredRegion = 'fra1';
 
 export async function GET(request) {
   try {

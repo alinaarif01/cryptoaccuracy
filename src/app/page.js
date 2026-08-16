@@ -117,37 +117,25 @@ export default function CleanTradingApp() {
     return () => clearInterval(balanceInterval);
   }, []);
 
-  const saveTradeToDb = (newTrade) => {
-    setTradeHistory((prev) => {
-      const updated = [newTrade, ...prev].slice(0, 50);
-      try {
-        localStorage.setItem('binance_trade_db', JSON.stringify(updated));
-      } catch (e) {}
-      return updated;
-    });
-  };
-
-  // 3. Auto Trading Bot Loop
-  useEffect(() => {
-    if (isAutoTrading) {
-      setBotStatusText('🔍 Scanning live Binance market... (Evaluating RSI & EMA confluence for 85% profit setup)');
-      runAutoTradeCycle();
-      scanTimerRef.current = setInterval(runAutoTradeCycle, 6000);
-    } else {
-      setBotStatusText('Auto trading is currently OFF. Click button below to activate.');
-      if (scanTimerRef.current) clearInterval(scanTimerRef.current);
-    }
-    return () => {
-      if (scanTimerRef.current) clearInterval(scanTimerRef.current);
-    };
-  }, [isAutoTrading]);
-
+  // Query Live Open Orders directly from Binance API
   const fetchStatus = async () => {
     try {
-      const res = await fetch('/api/bot');
+      const res = await fetch('/api/binance/open-orders');
       const data = await res.json();
-      if (data.success) {
-        setOpenPositions(data.positions || []);
+      if (data.success && data.orders) {
+        const binancePositions = data.orders.map(o => ({
+          id: `BIN-${o.orderId}`,
+          binanceOrderId: o.orderId,
+          symbol: o.symbol,
+          side: o.side,
+          entryPrice: parseFloat(o.price) || parseFloat(o.origQty ? o.cummulativeQuoteQty / o.origQty : 0),
+          quantity: parseFloat(o.origQty),
+          amountUsdt: parseFloat(o.origQty) * (parseFloat(o.price) || 0),
+          status: o.status,
+          type: o.type,
+          time: new Date(o.time).toLocaleTimeString()
+        }));
+        setOpenPositions(binancePositions);
       }
     } catch (e) {}
   };
@@ -161,12 +149,12 @@ export default function CleanTradingApp() {
       });
       const data = await res.json();
       if (data.success) {
-        if (data.positions) setOpenPositions(data.positions);
         if (data.logs && data.logs.length > 0) {
           const lastLog = data.logs[0];
           setBotStatusText(lastLog.message);
           showToast(lastLog.message, 'info');
         }
+        fetchStatus();
       }
     } catch (e) {}
   };
@@ -180,8 +168,7 @@ export default function CleanTradingApp() {
         symbol: selectedCoin,
         side: tradeSide,
         amountUsdt: tradeAmount,
-        orderType: priceMode === 'CUSTOM' ? 'LIMIT' : 'MARKET',
-        price: priceMode === 'CUSTOM' ? parseFloat(customPrice || coinPrices[selectedCoin]?.price) : null
+        orderType: 'MARKET'
       };
 
       const res = await fetch('/api/binance/order', {
@@ -192,21 +179,8 @@ export default function CleanTradingApp() {
       const data = await res.json();
       if (data.success) {
         setOrderError(null);
-        showToast(`🚀 ${tradeSide} ${selectedCoin} Order Placed (${priceMode === 'CUSTOM' ? 'Limit @ $' + payload.price : 'Market Price'})`, 'success');
-        setOpenPositions(data.positions || []);
-
-        if (data.position) {
-          saveTradeToDb({
-            id: data.position.id || `BIN-${Date.now()}`,
-            symbol: selectedCoin,
-            side: tradeSide,
-            price: data.position.entryPrice || payload.price || coinPrices[selectedCoin]?.price,
-            amountUsdt: tradeAmount,
-            type: payload.orderType,
-            status: 'EXECUTED',
-            time: new Date().toLocaleTimeString()
-          });
-        }
+        showToast(`🚀 Trade Executed on Binance: ${tradeSide} ${selectedCoin}`, 'success');
+        fetchStatus();
         fetchLiveBalance();
       } else {
         setOrderError(data.error);
@@ -233,20 +207,8 @@ export default function CleanTradingApp() {
       const data = await res.json();
       if (data.success) {
         setOrderError(null);
-        const pnl = data.closedTrade?.pnl || 0;
-        showToast(`🛑 Trade Closed on Binance: ${selectedCoin} | PnL: $${pnl}`, pnl >= 0 ? 'success' : 'info');
-        setOpenPositions(data.positions || []);
-
-        saveTradeToDb({
-          id: `CLOSE-${Date.now()}`,
-          symbol: selectedCoin,
-          side: 'CLOSE',
-          price: data.closedTrade?.exitPrice || coinPrices[selectedCoin]?.price,
-          amountUsdt: tradeAmount,
-          pnl,
-          status: 'CLOSED',
-          time: new Date().toLocaleTimeString()
-        });
+        showToast(`🛑 Position Closed on Binance: ${selectedCoin}`, 'success');
+        fetchStatus();
         fetchLiveBalance();
       } else {
         setOrderError(data.error);

@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { BinanceAPI } from '../../../../lib/binance';
-import { getOpenPositions, saveOpenPositions, addTradeRecord } from '../../../../lib/config';
-import { closePositionInMySQL } from '../../../../lib/db';
+import { getOpenPositions, saveOpenPositions } from '../../../../lib/config';
 
 export const dynamic = 'force-dynamic';
 export const preferredRegion = 'fra1';
@@ -28,7 +27,7 @@ export async function POST(request) {
 
     let exitPrice = targetPos.currentPrice || targetPos.entryPrice;
 
-    // Execute reverse market close on Binance
+    // Execute reverse market close directly on Binance
     try {
       const closeResult = await BinanceAPI.closeOrder({
         symbol: targetPos.symbol,
@@ -40,7 +39,6 @@ export async function POST(request) {
       }
     } catch (binanceErr) {
       console.warn('Binance close error:', binanceErr.message);
-      // Fallback: fetch current live price
       exitPrice = await BinanceAPI.getPrice(targetPos.symbol);
     }
 
@@ -65,20 +63,6 @@ export async function POST(request) {
       isWin: pnl > 0,
       closeReason: 'Manual User Close'
     };
-
-    // Update in MySQL Database
-    try {
-      await closePositionInMySQL(targetPos.id, {
-        exitPrice,
-        pnl: closedRecord.pnl,
-        pnlPercent: closedRecord.pnlPercent,
-        closeReason: 'Manual User Close'
-      });
-    } catch (dbErr) {
-      console.warn('MySQL Close Notice:', dbErr.message);
-    }
-
-    addTradeRecord(closedRecord);
 
     const remainingPositions = positions.filter(p => p.id !== targetPos.id);
     saveOpenPositions(remainingPositions);

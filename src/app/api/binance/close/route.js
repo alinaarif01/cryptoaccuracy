@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { BinanceAPI } from '../../../../lib/binance';
 import { getOpenPositions, saveOpenPositions, addTradeRecord } from '../../../../lib/config';
+import { closePositionInMySQL } from '../../../../lib/db';
 
 export const dynamic = 'force-dynamic';
 export const preferredRegion = 'fra1';
@@ -62,21 +63,33 @@ export async function POST(request) {
       pnl: parseFloat(pnl.toFixed(2)),
       pnlPercent: parseFloat(pnlPercent.toFixed(2)),
       isWin: pnl > 0,
-      closeReason: 'Manual Close'
+      closeReason: 'Manual User Close'
     };
+
+    // Update in MySQL Database
+    try {
+      await closePositionInMySQL(targetPos.id, {
+        exitPrice,
+        pnl: closedRecord.pnl,
+        pnlPercent: closedRecord.pnlPercent,
+        closeReason: 'Manual User Close'
+      });
+    } catch (dbErr) {
+      console.warn('MySQL Close Notice:', dbErr.message);
+    }
 
     addTradeRecord(closedRecord);
 
-    positions = positions.filter(p => p.id !== targetPos.id);
-    saveOpenPositions(positions);
+    const remainingPositions = positions.filter(p => p.id !== targetPos.id);
+    saveOpenPositions(remainingPositions);
 
     return NextResponse.json({
       success: true,
-      message: `Position closed: ${closedRecord.symbol} | PnL: $${closedRecord.pnl}`,
+      message: `Position for ${targetPos.symbol} closed successfully on Binance.`,
       closedTrade: closedRecord,
-      positions
+      positions: remainingPositions
     });
   } catch (error) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

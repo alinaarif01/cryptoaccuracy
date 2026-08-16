@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { BinanceAPI } from '../../../../lib/binance';
 import { getOpenPositions, saveOpenPositions, getSettings } from '../../../../lib/config';
+import { savePositionToMySQL } from '../../../../lib/db';
 
 export const dynamic = 'force-dynamic';
 export const preferredRegion = 'fra1'; // Deploy serverless function in Frankfurt, Europe
@@ -53,6 +54,13 @@ export async function POST(request) {
       status: 'OPEN',
       openedAt: new Date().toISOString()
     };
+
+    // Save to MySQL Database
+    try {
+      await savePositionToMySQL(newPosition);
+    } catch (dbErr) {
+      console.warn('MySQL Save Notice:', dbErr.message);
+    }
 
     const positions = getOpenPositions();
     positions.unshift(newPosition);

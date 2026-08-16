@@ -7,6 +7,7 @@ import SettingsModal from '../components/SettingsModal';
 const COINS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT', 'DOGEUSDT', 'XRPUSDT'];
 
 export default function CleanTradingApp() {
+  const [tradingMode, setTradingMode] = useState('paper'); // 'paper' (Demo) | 'live'
   const [selectedCoin, setSelectedCoin] = useState('BTCUSDT');
   const [coinPrices, setCoinPrices] = useState({});
   const [tradeSide, setTradeSide] = useState('BUY');
@@ -26,6 +27,18 @@ export default function CleanTradingApp() {
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 3500);
+  };
+
+  const handleToggleMode = async (mode) => {
+    setTradingMode(mode);
+    try {
+      await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode })
+      });
+      showToast(`Trading Mode switched to: ${mode === 'paper' ? '🛡️ Demo Practice Mode ($10,000 USDT)' : '🔥 Live Binance Account'}`, 'success');
+    } catch (e) {}
   };
 
   // 1. Direct Binance Live WebSocket Stream for Selected Coins
@@ -188,10 +201,46 @@ export default function CleanTradingApp() {
           <span className="brand-dot"></span>
           <h2>BINANCE TRADING CONTROL</h2>
         </div>
-        <button className="clean-settings-btn" onClick={() => setIsSettingsOpen(true)}>
-          <Sliders size={16} />
-          <span>API Settings</span>
-        </button>
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', background: 'var(--bg-card)', padding: '2px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+            <button
+              onClick={() => handleToggleMode('paper')}
+              style={{
+                background: tradingMode === 'paper' ? 'var(--binance-gold)' : 'transparent',
+                color: tradingMode === 'paper' ? '#000' : 'var(--text-muted)',
+                border: 'none',
+                padding: '4px 10px',
+                borderRadius: '6px',
+                fontSize: '0.72rem',
+                fontWeight: '800',
+                cursor: 'pointer'
+              }}
+            >
+              🛡️ Demo Practice ($10k)
+            </button>
+            <button
+              onClick={() => handleToggleMode('live')}
+              style={{
+                background: tradingMode === 'live' ? 'var(--primary-green)' : 'transparent',
+                color: tradingMode === 'live' ? '#000' : 'var(--text-muted)',
+                border: 'none',
+                padding: '4px 10px',
+                borderRadius: '6px',
+                fontSize: '0.72rem',
+                fontWeight: '800',
+                cursor: 'pointer'
+              }}
+            >
+              🔥 Live Account
+            </button>
+          </div>
+
+          <button className="clean-settings-btn" onClick={() => setIsSettingsOpen(true)}>
+            <Sliders size={16} />
+            <span>API Settings</span>
+          </button>
+        </div>
       </div>
 
       {/* 1. COIN SELECTION SECTION */}

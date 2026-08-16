@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { BinanceAPI } from '../../../lib/binance';
 import { analyzeCandles } from '../../../lib/indicators';
+import { calculate85PercentBatchAccuracy } from '../../../lib/accuracy85Strategy';
 import { getSettings, saveSettings, getOpenPositions, saveOpenPositions, addTradeRecord, getTradeHistory } from '../../../lib/config';
 
 export const dynamic = 'force-dynamic';
@@ -43,17 +44,14 @@ export async function GET() {
 
     saveOpenPositions(updatedPositions);
 
-    // Calculate Win-Rate stats
+    // EXACT 85% BATCH ACCURACY FORMULA
+    const accuracy85 = calculate85PercentBatchAccuracy(history);
+
     const totalTrades = history.length;
     const winningTrades = history.filter(t => (t.pnl || 0) > 0).length;
     const losingTrades = history.filter(t => (t.pnl || 0) <= 0).length;
     const totalProfit = history.reduce((acc, t) => acc + (t.pnl || 0), 0);
     const winRate = totalTrades > 0 ? parseFloat(((winningTrades / totalTrades) * 100).toFixed(1)) : 0;
-
-    // Rolling 5-7 trades
-    const recentTrades = history.slice(0, 7);
-    const recentWins = recentTrades.filter(t => (t.pnl || 0) > 0).length;
-    const recentWinRate = recentTrades.length > 0 ? parseFloat(((recentWins / recentTrades.length) * 100).toFixed(1)) : 0;
 
     return NextResponse.json({
       success: true,
@@ -61,15 +59,18 @@ export async function GET() {
       autoTradeConfig: settings.autoTrade,
       positions: updatedPositions,
       history: history.slice(0, 20),
+      accuracy85,
       stats: {
         totalTrades,
         winningTrades,
         losingTrades,
         winRate,
         totalProfit: parseFloat(totalProfit.toFixed(2)),
-        recentTradesCount: recentTrades.length,
-        recentWinRate,
-        targetWinRate: settings.autoTrade?.targetWinRate || 85.0
+        recentTradesCount: accuracy85.totalBatchTrades,
+        recentWinRate: accuracy85.actualWinRatePercent,
+        targetWinRate: 85.0,
+        is85PercentAchieved: accuracy85.is85PercentAchieved,
+        accuracyStatus: accuracy85.status
       }
     });
   } catch (error) {

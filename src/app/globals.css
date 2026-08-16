@@ -72,6 +72,16 @@ body {
   letter-spacing: 0.5px;
 }
 
+.live-status-tag {
+  background: rgba(0, 245, 155, 0.12);
+  border: 1px solid rgba(0, 245, 155, 0.3);
+  color: var(--primary-green);
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
 .clean-settings-btn {
   background: var(--bg-card);
   border: 1px solid var(--border-color);

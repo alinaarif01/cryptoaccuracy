@@ -199,43 +199,11 @@ export default function CleanTradingApp() {
       <div className="clean-header">
         <div className="clean-brand">
           <span className="brand-dot"></span>
-          <h2>BINANCE TRADING CONTROL</h2>
+          <h2>BINANCE LIVE TRADING</h2>
         </div>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ display: 'flex', background: 'var(--bg-card)', padding: '2px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-            <button
-              onClick={() => handleToggleMode('paper')}
-              style={{
-                background: tradingMode === 'paper' ? 'var(--binance-gold)' : 'transparent',
-                color: tradingMode === 'paper' ? '#000' : 'var(--text-muted)',
-                border: 'none',
-                padding: '4px 10px',
-                borderRadius: '6px',
-                fontSize: '0.72rem',
-                fontWeight: '800',
-                cursor: 'pointer'
-              }}
-            >
-              🛡️ Demo Practice ($10k)
-            </button>
-            <button
-              onClick={() => handleToggleMode('live')}
-              style={{
-                background: tradingMode === 'live' ? 'var(--primary-green)' : 'transparent',
-                color: tradingMode === 'live' ? '#000' : 'var(--text-muted)',
-                border: 'none',
-                padding: '4px 10px',
-                borderRadius: '6px',
-                fontSize: '0.72rem',
-                fontWeight: '800',
-                cursor: 'pointer'
-              }}
-            >
-              🔥 Live Account
-            </button>
-          </div>
-
+          <span className="live-status-tag">🔥 REAL ACCOUNT ACTIVE</span>
           <button className="clean-settings-btn" onClick={() => setIsSettingsOpen(true)}>
             <Sliders size={16} />
             <span>API Settings</span>

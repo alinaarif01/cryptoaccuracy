@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { X, ShieldCheck, Key, Lock, ExternalLink } from 'lucide-react';
 
 export default function SettingsModal({ isOpen, onClose, onSaved }) {
-  const [apiKey, setApiKey] = useState('UrRgxXFMD7sL0umV7u8LEU943pJ6cbPU1STAW8x0g3uJ2zaCRhRScTGZUZwJAbOX');
-  const [apiSecret, setApiSecret] = useState('L1ffOIr6IAC8wCUwWQ0gBzjVEPrDHlf8XWKtEu7npoRsJXHkMvAGBS5nnxoAgOSG');
+  const [apiKey, setApiKey] = useState('Xjd3MNEA9OxQaI8Xws6td4CorlSvMiKn4oMTs4y1OrI8q08TejkjHpzir6H12QIV');
+  const [apiSecret, setApiSecret] = useState('M9vokar9Q18BLXR1sHZXHSg2ZvpW9BoabWIwnXFNgzMlQe3zBMOIV1r0ZCDwehPT');
   const [useTestnet, setUseTestnet] = useState(false);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState(null);
@@ -16,8 +16,8 @@ export default function SettingsModal({ isOpen, onClose, onSaved }) {
         .then((res) => res.json())
         .then((data) => {
           if (data.success && data.settings) {
-            setApiKey(data.settings.apiKey || 'UrRgxXFMD7sL0umV7u8LEU943pJ6cbPU1STAW8x0g3uJ2zaCRhRScTGZUZwJAbOX');
-            setApiSecret(data.settings.apiSecret || 'L1ffOIr6IAC8wCUwWQ0gBzjVEPrDHlf8XWKtEu7npoRsJXHkMvAGBS5nnxoAgOSG');
+            setApiKey(data.settings.apiKey || 'Xjd3MNEA9OxQaI8Xws6td4CorlSvMiKn4oMTs4y1OrI8q08TejkjHpzir6H12QIV');
+            setApiSecret(data.settings.apiSecret || 'M9vokar9Q18BLXR1sHZXHSg2ZvpW9BoabWIwnXFNgzMlQe3zBMOIV1r0ZCDwehPT');
             setUseTestnet(!!data.settings.useTestnet);
           }
         })

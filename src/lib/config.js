@@ -4,7 +4,6 @@ import path from 'path';
 const DATA_DIR = path.join(process.cwd(), 'data');
 const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
 const HISTORY_FILE = path.join(DATA_DIR, 'history.json');
-const POSITIONS_FILE = path.join(DATA_DIR, 'positions.json');
 const ENV_FILE = path.join(process.cwd(), '.env.local');
 
 if (!fs.existsSync(DATA_DIR)) {
@@ -110,12 +109,13 @@ export function addTradeRecord(record) {
   return data.trades;
 }
 
+let memoryPositions = [];
+
 export function getOpenPositions() {
-  const data = loadJSON(POSITIONS_FILE, { positions: [] });
-  return data.positions || [];
+  return memoryPositions;
 }
 
 export function saveOpenPositions(positions) {
-  saveJSON(POSITIONS_FILE, { positions });
-  return positions;
+  memoryPositions = positions || [];
+  return memoryPositions;
 }

@@ -86,12 +86,46 @@ export default function CleanTradingApp() {
     return () => ws.close();
   }, []);
 
-  // 2. Fetch Initial Positions & Bot Status
+  const [liveBalance, setLiveBalance] = useState({ usdt: 0, loading: true });
+  const [tradeHistory, setTradeHistory] = useState([]);
+
+  // Fetch Live Real Binance Balance from API
+  const fetchLiveBalance = async () => {
+    try {
+      const res = await fetch('/api/binance/account');
+      const data = await res.json();
+      if (data.success) {
+        setLiveBalance({ usdt: data.usdt || data.freeUsdt || 0, loading: false });
+      } else {
+        setLiveBalance({ usdt: 0, loading: false });
+      }
+    } catch (e) {
+      setLiveBalance({ usdt: 0, loading: false });
+    }
+  };
+
+  // Load persistent trade history on mount
   useEffect(() => {
-    fetchStatus();
-    const interval = setInterval(fetchStatus, 4000);
-    return () => clearInterval(interval);
+    fetchLiveBalance();
+    const balanceInterval = setInterval(fetchLiveBalance, 10000);
+
+    try {
+      const saved = localStorage.getItem('binance_trade_db');
+      if (saved) setTradeHistory(JSON.parse(saved));
+    } catch (e) {}
+
+    return () => clearInterval(balanceInterval);
   }, []);
+
+  const saveTradeToDb = (newTrade) => {
+    setTradeHistory((prev) => {
+      const updated = [newTrade, ...prev].slice(0, 50);
+      try {
+        localStorage.setItem('binance_trade_db', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
 
   // 3. Auto Trading Bot Loop
   useEffect(() => {
@@ -160,6 +194,20 @@ export default function CleanTradingApp() {
         setOrderError(null);
         showToast(`🚀 ${tradeSide} ${selectedCoin} Order Placed (${priceMode === 'CUSTOM' ? 'Limit @ $' + payload.price : 'Market Price'})`, 'success');
         setOpenPositions(data.positions || []);
+
+        if (data.position) {
+          saveTradeToDb({
+            id: data.position.id || `BIN-${Date.now()}`,
+            symbol: selectedCoin,
+            side: tradeSide,
+            price: data.position.entryPrice || payload.price || coinPrices[selectedCoin]?.price,
+            amountUsdt: tradeAmount,
+            type: payload.orderType,
+            status: 'EXECUTED',
+            time: new Date().toLocaleTimeString()
+          });
+        }
+        fetchLiveBalance();
       } else {
         setOrderError(data.error);
         showToast(`❌ Error: ${data.error}`, 'error');
@@ -188,6 +236,18 @@ export default function CleanTradingApp() {
         const pnl = data.closedTrade?.pnl || 0;
         showToast(`🛑 Trade Closed on Binance: ${selectedCoin} | PnL: $${pnl}`, pnl >= 0 ? 'success' : 'info');
         setOpenPositions(data.positions || []);
+
+        saveTradeToDb({
+          id: `CLOSE-${Date.now()}`,
+          symbol: selectedCoin,
+          side: 'CLOSE',
+          price: data.closedTrade?.exitPrice || coinPrices[selectedCoin]?.price,
+          amountUsdt: tradeAmount,
+          pnl,
+          status: 'CLOSED',
+          time: new Date().toLocaleTimeString()
+        });
+        fetchLiveBalance();
       } else {
         setOrderError(data.error);
         showToast(`❌ Error: ${data.error}`, 'error');
@@ -231,8 +291,19 @@ export default function CleanTradingApp() {
           <h2>BINANCE LIVE TRADING</h2>
         </div>
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span className="live-status-tag">🔥 REAL ACCOUNT ACTIVE</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <span style={{
+            background: 'rgba(240,185,11,0.12)',
+            border: '1px solid rgba(240,185,11,0.35)',
+            color: 'var(--binance-gold)',
+            fontSize: '0.74rem',
+            fontWeight: '800',
+            padding: '4px 10px',
+            borderRadius: '20px'
+          }}>
+            💰 Binance Balance: {liveBalance.loading ? 'Loading...' : `$${liveBalance.usdt.toFixed(2)} USDT`}
+          </span>
+          <span className="live-status-tag">🔥 REAL ACCOUNT</span>
           <button className="clean-settings-btn" onClick={() => setIsSettingsOpen(true)}>
             <Sliders size={16} />
             <span>API Settings</span>
@@ -530,6 +601,52 @@ export default function CleanTradingApp() {
                 >
                   Close
                 </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 5. STORED TRADE HISTORY (DB & EXECUTIONS) */}
+      {tradeHistory.length > 0 && (
+        <div className="clean-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+            <label className="card-label" style={{ marginBottom: 0 }}>SAVED TRADE HISTORY ({tradeHistory.length})</label>
+            <button
+              onClick={() => {
+                setTradeHistory([]);
+                localStorage.removeItem('binance_trade_db');
+              }}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--text-muted)',
+                fontSize: '0.72rem',
+                cursor: 'pointer'
+              }}
+            >
+              Clear
+            </button>
+          </div>
+          <div className="positions-list">
+            {tradeHistory.map((t) => (
+              <div key={t.id} className="pos-item">
+                <div className="pos-col">
+                  <strong>{t.symbol}</strong>
+                  <span className={`pos-tag ${t.side === 'BUY' ? 'buy' : 'sell'}`}>{t.side}</span>
+                </div>
+                <div className="pos-col">
+                  <span className="pos-lbl">Rate:</span>
+                  <span>${t.price ? Number(t.price).toLocaleString() : '--'}</span>
+                </div>
+                <div className="pos-col">
+                  <span className="pos-lbl">Amount:</span>
+                  <span>${t.amountUsdt} USDT</span>
+                </div>
+                <div className="pos-col">
+                  <span className="pos-lbl">Time:</span>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{t.time}</span>
+                </div>
               </div>
             ))}
           </div>

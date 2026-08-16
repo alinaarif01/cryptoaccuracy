@@ -280,11 +280,6 @@ export default function CleanTradingApp() {
           }}>
             💰 Binance Balance: {liveBalance.loading ? 'Loading...' : `$${liveBalance.usdt.toFixed(2)} USDT`}
           </span>
-          <span className="live-status-tag">🔥 REAL ACCOUNT</span>
-          <button className="clean-settings-btn" onClick={() => setIsSettingsOpen(true)}>
-            <Sliders size={16} />
-            <span>API Settings</span>
-          </button>
         </div>
       </div>
 
@@ -506,13 +501,6 @@ export default function CleanTradingApp() {
           </div>
         </div>
       )}
-
-      {/* Settings Modal */}
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        onSaved={() => fetchStatus()}
-      />
 
       {/* Toast Notifications */}
       <div className="toast-container">

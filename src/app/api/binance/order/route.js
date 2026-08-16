@@ -8,7 +8,7 @@ export const preferredRegion = 'fra1'; // Deploy serverless function in Frankfur
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { symbol, side, amountUsdt, takeProfitPercent, stopLossPercent } = body;
+    const { symbol, side, amountUsdt, orderType = 'MARKET', price = null, takeProfitPercent, stopLossPercent } = body;
 
     if (!symbol || !side || !amountUsdt) {
       return NextResponse.json({ success: false, error: 'Symbol, side (BUY/SELL), and amount are required.' }, { status: 400 });
@@ -18,7 +18,8 @@ export async function POST(request) {
       symbol,
       side: side.toUpperCase(),
       amountUsdt: parseFloat(amountUsdt),
-      orderType: 'MARKET'
+      orderType: (orderType || 'MARKET').toUpperCase(),
+      price: price ? parseFloat(price) : null
     });
 
     const tp = takeProfitPercent ? parseFloat(takeProfitPercent) : 1.8;

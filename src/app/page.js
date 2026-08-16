@@ -12,12 +12,15 @@ export default function CleanTradingApp() {
   const [coinPrices, setCoinPrices] = useState({});
   const [tradeSide, setTradeSide] = useState('BUY');
   const [tradeAmount, setTradeAmount] = useState(50);
+  const [priceMode, setPriceMode] = useState('MARKET'); // 'MARKET' | 'CUSTOM'
+  const [customPrice, setCustomPrice] = useState('');
   const [isAutoTrading, setIsAutoTrading] = useState(false);
   const [openPositions, setOpenPositions] = useState([]);
   const [botStatusText, setBotStatusText] = useState('Auto trading is currently OFF.');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [toasts, setToasts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [orderError, setOrderError] = useState(null);
 
   const scanTimerRef = useRef(null);
 
@@ -116,26 +119,28 @@ export default function CleanTradingApp() {
     } catch (e) {}
   };
 
-  const [orderError, setOrderError] = useState(null);
-
   // MANUAL: START TRADE on Binance
   const handleStartManualTrade = async () => {
     setLoading(true);
     setOrderError(null);
     try {
+      const payload = {
+        symbol: selectedCoin,
+        side: tradeSide,
+        amountUsdt: tradeAmount,
+        orderType: priceMode === 'CUSTOM' ? 'LIMIT' : 'MARKET',
+        price: priceMode === 'CUSTOM' ? parseFloat(customPrice || coinPrices[selectedCoin]?.price) : null
+      };
+
       const res = await fetch('/api/binance/order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          symbol: selectedCoin,
-          side: tradeSide,
-          amountUsdt: tradeAmount
-        })
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
       if (data.success) {
         setOrderError(null);
-        showToast(`🚀 Trade Started on Binance: ${tradeSide} ${selectedCoin} ($${tradeAmount} USDT)`, 'success');
+        showToast(`🚀 ${tradeSide} ${selectedCoin} Order Placed (${priceMode === 'CUSTOM' ? 'Limit @ $' + payload.price : 'Market Price'})`, 'success');
         setOpenPositions(data.positions || []);
       } else {
         setOrderError(data.error);
@@ -264,6 +269,7 @@ export default function CleanTradingApp() {
       <div className="clean-card">
         <label className="card-label">2. MANUAL TRADING (USER CONTROLLED)</label>
         
+        {/* BUY / SELL Direction + Amount in USDT */}
         <div className="trade-inputs-row">
           {/* BUY / SELL Switch */}
           <div className="side-switch">
@@ -290,20 +296,98 @@ export default function CleanTradingApp() {
               onChange={(e) => setTradeAmount(parseFloat(e.target.value) || 10)}
               min="5"
               step="5"
+              placeholder="Amount USDT"
             />
             <span className="usdt-suffix">USDT</span>
           </div>
         </div>
 
+        {/* PRICE MODE: Market Price vs Custom Price ("Buy at" / "Sell at") */}
+        <div style={{ marginTop: '14px', background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+          <div style={{ display: 'flex', gap: '8px', marginBottom: priceMode === 'CUSTOM' ? '12px' : '0' }}>
+            <button
+              type="button"
+              onClick={() => setPriceMode('MARKET')}
+              style={{
+                flex: 1,
+                padding: '8px 12px',
+                borderRadius: '8px',
+                border: priceMode === 'MARKET' ? (tradeSide === 'BUY' ? '1px solid var(--primary-green)' : '1px solid var(--danger-red)') : '1px solid var(--border-color)',
+                background: priceMode === 'MARKET' ? (tradeSide === 'BUY' ? 'rgba(0,245,155,0.15)' : 'rgba(255,59,105,0.15)') : 'transparent',
+                color: priceMode === 'MARKET' ? '#fff' : 'var(--text-muted)',
+                fontWeight: '700',
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              ⚡ {tradeSide === 'BUY' ? 'Buy at' : 'Sell at'} Market Price (${currentPrice ? currentPrice.toLocaleString() : '--'})
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setPriceMode('CUSTOM');
+                if (!customPrice && currentPrice) setCustomPrice(currentPrice.toString());
+              }}
+              style={{
+                flex: 1,
+                padding: '8px 12px',
+                borderRadius: '8px',
+                border: priceMode === 'CUSTOM' ? '1px solid var(--binance-gold)' : '1px solid var(--border-color)',
+                background: priceMode === 'CUSTOM' ? 'rgba(240,185,11,0.15)' : 'transparent',
+                color: priceMode === 'CUSTOM' ? 'var(--binance-gold)' : 'var(--text-muted)',
+                fontWeight: '700',
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              🎯 {tradeSide === 'BUY' ? 'Buy at' : 'Sell at'} (Custom Rate)
+            </button>
+          </div>
+
+          {/* Custom Price Input Field */}
+          {priceMode === 'CUSTOM' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-card)', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+              <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                {tradeSide === 'BUY' ? 'Buy at Rate:' : 'Sell at Rate:'}
+              </span>
+              <span style={{ color: 'var(--binance-gold)', fontWeight: '800' }}>$</span>
+              <input
+                type="number"
+                value={customPrice}
+                onChange={(e) => setCustomPrice(e.target.value)}
+                placeholder={currentPrice ? currentPrice.toString() : 'Enter price rate'}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  outline: 'none',
+                  color: '#fff',
+                  fontSize: '0.95rem',
+                  fontWeight: '700',
+                  width: '100%'
+                }}
+                step="any"
+              />
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>USDT</span>
+            </div>
+          )}
+        </div>
+
         {/* 2 MAIN BUTTONS: START TRADE & CLOSE TRADE */}
-        <div className="trade-actions-grid">
+        <div className="trade-actions-grid" style={{ marginTop: '16px' }}>
           <button
             className="btn-start-trade"
             onClick={handleStartManualTrade}
             disabled={loading}
           >
             <Play size={20} fill="#000" />
-            <span>START TRADE</span>
+            <span>
+              {priceMode === 'CUSTOM'
+                ? `START TRADE (${tradeSide} @ $${customPrice || currentPrice})`
+                : `START TRADE (${tradeSide} @ MARKET)`}
+            </span>
           </button>
 
           <button

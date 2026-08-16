@@ -61,7 +61,7 @@ export default function CleanTradingApp() {
   // 3. Auto Trading Bot Loop
   useEffect(() => {
     if (isAutoTrading) {
-      setBotStatusText('⚡ Auto-trading ACTIVE: Scanning Binance 5m candles targeting 85% profit...');
+      setBotStatusText('🔍 Scanning live Binance market... (Evaluating RSI & EMA confluence for 85% profit setup)');
       runAutoTradeCycle();
       scanTimerRef.current = setInterval(runAutoTradeCycle, 6000);
     } else {

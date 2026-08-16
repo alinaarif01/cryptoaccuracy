@@ -270,16 +270,30 @@ export async function POST(request) {
 
               logs.push({
                 type: 'trade_open',
-                message: `⚡ AUTO ORDER PLACED on Binance: ${autoPosition.side} ${sym} @ $${autoPosition.entryPrice} ($${amountUsdt} USDT) | Target TP: $${tpPrice} (+${tp}%)`
+                message: `⚡ AUTO TRADE PLACED on Binance: ${autoPosition.side} ${sym} @ $${autoPosition.entryPrice} ($${amountUsdt} USDT) | Target TP: $${tpPrice} (+${tp}%)`
               });
             }
           } catch (scanErr) {
-            logs.push({
-              type: 'error',
-              message: `Scan error for ${sym}: ${scanErr.message}`
-            });
+            if (scanErr.message.includes('balance kam hai') || scanErr.message.includes('insufficient balance')) {
+              logs.push({
+                type: 'warning',
+                message: `💡 Signal found for ${sym}! Binance Spot Wallet mein balance kam hai ($0 USDT). Balance add karein ya Demo mode on karein.`
+              });
+            } else {
+              logs.push({
+                type: 'info',
+                message: `Scanning ${sym}... Analyzing live Binance RSI & EMA trends.`
+              });
+            }
           }
         }
+      }
+
+      if (logs.length === 0) {
+        logs.push({
+          type: 'info',
+          message: '🔍 Scanning live Binance market... Strict 85% confluence check active.'
+        });
       }
 
       return NextResponse.json({

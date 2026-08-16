@@ -116,9 +116,12 @@ export default function CleanTradingApp() {
     } catch (e) {}
   };
 
+  const [orderError, setOrderError] = useState(null);
+
   // MANUAL: START TRADE on Binance
   const handleStartManualTrade = async () => {
     setLoading(true);
+    setOrderError(null);
     try {
       const res = await fetch('/api/binance/order', {
         method: 'POST',
@@ -131,16 +134,15 @@ export default function CleanTradingApp() {
       });
       const data = await res.json();
       if (data.success) {
+        setOrderError(null);
         showToast(`🚀 Trade Started on Binance: ${tradeSide} ${selectedCoin} ($${tradeAmount} USDT)`, 'success');
         setOpenPositions(data.positions || []);
       } else {
-        if (data.error && data.error.includes('balance kam hai')) {
-          showToast(`⚠️ ${data.error}`, 'error');
-        } else {
-          showToast(`❌ Error: ${data.error}`, 'error');
-        }
+        setOrderError(data.error);
+        showToast(`❌ Error: ${data.error}`, 'error');
       }
     } catch (err) {
+      setOrderError(err.message);
       showToast(`Network Error: ${err.message}`, 'error');
     } finally {
       setLoading(false);
@@ -150,6 +152,7 @@ export default function CleanTradingApp() {
   // MANUAL: CLOSE TRADE on Binance
   const handleCloseManualTrade = async () => {
     setLoading(true);
+    setOrderError(null);
     try {
       const res = await fetch('/api/binance/close', {
         method: 'POST',
@@ -158,13 +161,16 @@ export default function CleanTradingApp() {
       });
       const data = await res.json();
       if (data.success) {
+        setOrderError(null);
         const pnl = data.closedTrade?.pnl || 0;
         showToast(`🛑 Trade Closed on Binance: ${selectedCoin} | PnL: $${pnl}`, pnl >= 0 ? 'success' : 'info');
         setOpenPositions(data.positions || []);
       } else {
+        setOrderError(data.error);
         showToast(`❌ Error: ${data.error}`, 'error');
       }
     } catch (err) {
+      setOrderError(err.message);
       showToast(`Network Error: ${err.message}`, 'error');
     } finally {
       setLoading(false);
@@ -309,6 +315,26 @@ export default function CleanTradingApp() {
             <span>CLOSE TRADE</span>
           </button>
         </div>
+
+        {/* Actionable Error Banner if Trade Fails */}
+        {orderError && (
+          <div style={{
+            marginTop: '14px',
+            padding: '10px 14px',
+            borderRadius: '8px',
+            backgroundColor: 'rgba(255, 59, 105, 0.12)',
+            border: '1px solid rgba(255, 59, 105, 0.35)',
+            color: '#ff4d6d',
+            fontSize: '0.82rem',
+            lineHeight: '1.4',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <span>⚠️</span>
+            <strong>{orderError}</strong>
+          </div>
+        )}
       </div>
 
       {/* 3. AUTO TRADING SECTION (85% Profit Target) */}

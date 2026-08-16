@@ -1,6 +1,56 @@
 {
   "positions": [
     {
+      "id": "AUTO-SIM-1786864542723",
+      "binanceOrderId": "SIM-1786864542723",
+      "symbol": "SOLUSDT",
+      "side": "BUY",
+      "entryPrice": 75.44,
+      "currentPrice": 75.44,
+      "amountUsdt": 50,
+      "quantity": 0.662,
+      "takeProfitPrice": 76.7979,
+      "stopLossPrice": 74.6856,
+      "tpPercent": 1.8,
+      "slPercent": 1,
+      "signalScore": 95,
+      "signalReasons": [
+        "Golden Cross: EMA 9 crossed above EMA 21",
+        "RSI Strong Bullish (55.4)",
+        "MACD Bullish Histogram"
+      ],
+      "source": "auto",
+      "status": "OPEN",
+      "openedAt": "2026-08-16T07:15:42.723Z",
+      "floatingPnl": 0,
+      "floatingPnlPercent": 0
+    },
+    {
+      "id": "AUTO-SIM-1786864542521",
+      "binanceOrderId": "SIM-1786864542521",
+      "symbol": "SOLUSDT",
+      "side": "BUY",
+      "entryPrice": 75.44,
+      "currentPrice": 75.44,
+      "amountUsdt": 50,
+      "quantity": 0.662,
+      "takeProfitPrice": 76.7979,
+      "stopLossPrice": 74.6856,
+      "tpPercent": 1.8,
+      "slPercent": 1,
+      "signalScore": 95,
+      "signalReasons": [
+        "Golden Cross: EMA 9 crossed above EMA 21",
+        "RSI Strong Bullish (55.4)",
+        "MACD Bullish Histogram"
+      ],
+      "source": "auto",
+      "status": "OPEN",
+      "openedAt": "2026-08-16T07:15:42.522Z",
+      "floatingPnl": 0,
+      "floatingPnlPercent": 0
+    },
+    {
       "id": "TRD-1786832840004-791",
       "symbol": "XRPUSDT",
       "side": "BUY",
@@ -22,9 +72,9 @@
         "RSI Bullish Momentum (65.1)",
         "MACD positive divergence"
       ],
-      "currentPrice": 1.0013,
-      "floatingPnl": -0.2,
-      "floatingPnlPercent": -0.4
+      "currentPrice": 1.0014,
+      "floatingPnl": -0.19,
+      "floatingPnlPercent": -0.39
     },
     {
       "id": "TRD-1786832704535-430",
@@ -48,9 +98,9 @@
         "RSI Bearish Momentum (44.2)",
         "MACD negative divergence"
       ],
-      "currentPrice": 0.06983,
-      "floatingPnl": 0.07,
-      "floatingPnlPercent": 0.14
+      "currentPrice": 0.0698,
+      "floatingPnl": 0.09,
+      "floatingPnlPercent": 0.19
     },
     {
       "id": "TRD-1786832703910-959",
@@ -74,7 +124,7 @@
         "RSI Bearish Momentum (34.6)",
         "MACD negative divergence"
       ],
-      "currentPrice": 605.58,
+      "currentPrice": 605.57,
       "floatingPnl": 0.33,
       "floatingPnlPercent": 0.66
     },
@@ -100,9 +150,9 @@
         "RSI Bullish Momentum (60.9)",
         "MACD positive divergence"
       ],
-      "currentPrice": 1880.43,
-      "floatingPnl": -0.13,
-      "floatingPnlPercent": -0.25
+      "currentPrice": 1880.56,
+      "floatingPnl": -0.12,
+      "floatingPnlPercent": -0.24
     }
   ]
 }

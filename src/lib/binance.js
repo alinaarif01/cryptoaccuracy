@@ -261,11 +261,24 @@ export class BinanceAPI {
         raw: res.data
       };
     } catch (err) {
-      const errorMsg = err.response?.data?.msg || err.message;
-      if (errorMsg.includes('insufficient balance') || errorMsg.includes('MIN_NOTIONAL') || err.response?.data?.code === -2010) {
-        throw new Error(`Binance Spot Wallet mein balance kam hai (Available $0 USDT). Trade open karne ke liye balance add karein.`);
+      const code = err.response?.data?.code;
+      const rawMsg = err.response?.data?.msg || err.message;
+
+      let userFriendlyMsg = rawMsg;
+
+      if (code === -2010 || rawMsg.includes('insufficient balance')) {
+        userFriendlyMsg = `Binance Spot Wallet mein balance kam hai (Available $0 USDT). Trade open karne ke liye Spot wallet mein USDT transfer karein.`;
+      } else if (code === -1013 || rawMsg.includes('MIN_NOTIONAL')) {
+        userFriendlyMsg = `Order amount $${amountUsdt} kam hai. Binance par minimum trade $5 ya $10 USDT ki hoti hai.`;
+      } else if (code === -2015 || rawMsg.includes('permissions')) {
+        userFriendlyMsg = `API Permission Error: Binance API Management mein 'Enable Spot & Margin Trading' permission ON karein.`;
+      } else if (code === -1021 || rawMsg.includes('Timestamp')) {
+        userFriendlyMsg = `Time Synchronization Error: Binance server ke sath time sync ho raha hai, please dubara try karein.`;
+      } else if (code === -1003 || rawMsg.includes('TOO_MANY_REQUESTS')) {
+        userFriendlyMsg = `Binance rate limit reached. Thori dair baad dubara try karein.`;
       }
-      throw new Error(`Binance API Error: ${errorMsg}`);
+
+      throw new Error(userFriendlyMsg);
     }
   }
 

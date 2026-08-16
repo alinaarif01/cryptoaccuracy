@@ -14,8 +14,8 @@ export class BinanceAPI {
   static getCredentials() {
     const settings = getSettings();
     return {
-      apiKey: settings.apiKey || process.env.BINANCE_API_KEY || 'OCobwBkYlnYGWKMEbkhobnRYMs9mIMw8XgMuPwHRe6oWZ130PqF3gYqXNhiAbMRG',
-      apiSecret: settings.apiSecret || process.env.BINANCE_API_SECRET || '0Lw5wOhDzwdDv1LY5NLqAFZnmXYbP3ajT5YdYRTrSBR7nJUULTwXJXpG50mxOVzT'
+      apiKey: settings.apiKey || process.env.BINANCE_API_KEY || '',
+      apiSecret: settings.apiSecret || process.env.BINANCE_API_SECRET || ''
     };
   }
 

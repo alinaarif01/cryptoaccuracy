@@ -140,6 +140,21 @@ export default function CleanTradingApp() {
     } catch (e) {}
   };
 
+  // 3. Auto Trading Bot Loop
+  useEffect(() => {
+    if (isAutoTrading) {
+      setBotStatusText('⚡ Auto-trading ACTIVE: Scanning 6 coins on Binance for 85% confluence...');
+      runAutoTradeCycle();
+      scanTimerRef.current = setInterval(runAutoTradeCycle, 6000);
+    } else {
+      setBotStatusText('Auto trading is currently OFF. Click button below to activate.');
+      if (scanTimerRef.current) clearInterval(scanTimerRef.current);
+    }
+    return () => {
+      if (scanTimerRef.current) clearInterval(scanTimerRef.current);
+    };
+  }, [isAutoTrading]);
+
   const runAutoTradeCycle = async () => {
     try {
       const res = await fetch('/api/bot', {
@@ -222,39 +237,23 @@ export default function CleanTradingApp() {
     }
   };
 
-  // 3. Auto Trading Bot Loop
-  useEffect(() => {
-    if (isAutoTrading) {
-      setBotStatusText('⚡ Auto-trading ACTIVE: Scanning 6 coins on Binance for 85% confluence...');
-      runAutoTradeCycle();
-      scanTimerRef.current = setInterval(runAutoTradeCycle, 5000);
-    } else {
-      setBotStatusText('Auto trading is currently OFF. Click button below to activate.');
-      if (scanTimerRef.current) clearInterval(scanTimerRef.current);
-    }
-    return () => {
-      if (scanTimerRef.current) clearInterval(scanTimerRef.current);
-    };
-  }, [isAutoTrading]);
-
   // AUTO: TOGGLE AUTO TRADING
   const handleToggleAutoTrade = async () => {
-    const nextState = !isAutoTrading;
-    setIsAutoTrading(nextState);
-    if (nextState) {
-      setBotStatusText('⚡ Auto-trading ACTIVE: Scanning 6 coins on Binance for 85% confluence...');
-      showToast('⚡ Auto Trading Bot Activated!', 'success');
-    } else {
-      setBotStatusText('Auto trading is currently OFF. Click button below to activate.');
-      showToast('Auto Trading Bot Deactivated', 'info');
-    }
     try {
-      await fetch('/api/bot', {
+      const nextState = !isAutoTrading;
+      const res = await fetch('/api/bot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'toggle', enable: nextState })
       });
-    } catch (err) {}
+      const data = await res.json();
+      if (data.success) {
+        setIsAutoTrading(data.isAutoTrading);
+        showToast(data.message, data.isAutoTrading ? 'success' : 'info');
+      }
+    } catch (err) {
+      showToast(`Error: ${err.message}`, 'error');
+    }
   };
 
   const currentPrice = coinPrices[selectedCoin]?.price || 0;

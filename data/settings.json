@@ -1,7 +1,7 @@
 {
   "mode": "live",
-  "apiKey": "OCobwBkYlnYGWKMEbkhobnRYMs9mIMw8XgMuPwHRe6oWZ130PqF3gYqXNhiAbMRG",
-  "apiSecret": "0Lw5wOhDzwdDv1LY5NLqAFZnmXYbP3ajT5YdYRTrSBR7nJUULTwXJXpG50mxOVzT",
+  "apiKey": "UrRgxXFMD7sL0umV7u8LEU943pJ6cbPU1STAW8x0g3uJ2zaCRhRScTGZUZwJAbOX",
+  "apiSecret": "L1ffOIr6IAC8wCUwWQ0gBzjVEPrDHlf8XWKtEu7npoRsJXHkMvAGBS5nnxoAgOSG",
   "useTestnet": false,
   "paperBalance": 10000,
   "selectedCoin": "BTCUSDT",

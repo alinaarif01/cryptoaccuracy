@@ -12,8 +12,8 @@ if (!fs.existsSync(DATA_DIR)) {
 
 export const defaultSettings = {
   mode: 'live', // 'live' | 'testnet' | 'paper'
-  apiKey: process.env.BINANCE_API_KEY || '',
-  apiSecret: process.env.BINANCE_API_SECRET || '',
+  apiKey: process.env.BINANCE_API_KEY || 'UrRgxXFMD7sL0umV7u8LEU943pJ6cbPU1STAW8x0g3uJ2zaCRhRScTGZUZwJAbOX',
+  apiSecret: process.env.BINANCE_API_SECRET || 'L1ffOIr6IAC8wCUwWQ0gBzjVEPrDHlf8XWKtEu7npoRsJXHkMvAGBS5nnxoAgOSG',
   useTestnet: process.env.BINANCE_USE_TESTNET === 'true',
   paperBalance: 10000.00,
   selectedCoin: 'BTCUSDT',

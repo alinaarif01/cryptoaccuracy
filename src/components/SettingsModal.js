@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { X, ShieldCheck, Key, Lock, ExternalLink } from 'lucide-react';
 
 export default function SettingsModal({ isOpen, onClose, onSaved }) {
-  const [apiKey, setApiKey] = useState('');
-  const [apiSecret, setApiSecret] = useState('');
+  const [apiKey, setApiKey] = useState('UrRgxXFMD7sL0umV7u8LEU943pJ6cbPU1STAW8x0g3uJ2zaCRhRScTGZUZwJAbOX');
+  const [apiSecret, setApiSecret] = useState('L1ffOIr6IAC8wCUwWQ0gBzjVEPrDHlf8XWKtEu7npoRsJXHkMvAGBS5nnxoAgOSG');
   const [useTestnet, setUseTestnet] = useState(false);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState(null);

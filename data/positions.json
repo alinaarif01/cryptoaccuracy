@@ -22,9 +22,9 @@
         "RSI Bullish Momentum (65.1)",
         "MACD positive divergence"
       ],
-      "currentPrice": 1.0006,
-      "floatingPnl": -0.23,
-      "floatingPnlPercent": -0.47
+      "currentPrice": 1.0001,
+      "floatingPnl": -0.26,
+      "floatingPnlPercent": -0.52
     },
     {
       "id": "TRD-1786832704535-430",
@@ -48,9 +48,9 @@
         "RSI Bearish Momentum (44.2)",
         "MACD negative divergence"
       ],
-      "currentPrice": 0.06971,
-      "floatingPnl": 0.16,
-      "floatingPnlPercent": 0.31
+      "currentPrice": 0.06963,
+      "floatingPnl": 0.21,
+      "floatingPnlPercent": 0.43
     },
     {
       "id": "TRD-1786832703910-959",
@@ -74,9 +74,9 @@
         "RSI Bearish Momentum (34.6)",
         "MACD negative divergence"
       ],
-      "currentPrice": 605.93,
-      "floatingPnl": 0.3,
-      "floatingPnlPercent": 0.6
+      "currentPrice": 604.95,
+      "floatingPnl": 0.38,
+      "floatingPnlPercent": 0.76
     },
     {
       "id": "TRD-1786832702972-589",
@@ -100,9 +100,9 @@
         "RSI Bullish Momentum (60.9)",
         "MACD positive divergence"
       ],
-      "currentPrice": 1880.35,
-      "floatingPnl": -0.13,
-      "floatingPnlPercent": -0.26
+      "currentPrice": 1879.65,
+      "floatingPnl": -0.15,
+      "floatingPnlPercent": -0.29
     }
   ]
 }

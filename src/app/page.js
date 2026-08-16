@@ -299,7 +299,7 @@ export default function CleanTradingApp() {
         <div className="auto-card-top">
           <div>
             <label className="card-label">3. AUTO TRADING ENGINE</label>
-            <p className="auto-sub-text">Khud Binance py trade start aur close karega (Target: 85% Profit Accuracy)</p>
+            <p className="auto-sub-text">Autonomous Algorithmic Trading (85% Target Win-Rate Strategy)</p>
           </div>
           <span className="accuracy-badge">🎯 85% TARGET</span>
         </div>

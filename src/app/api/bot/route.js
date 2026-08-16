@@ -278,7 +278,7 @@ export async function POST(request) {
             if (scanErr.message.includes('balance kam hai') || scanErr.message.includes('insufficient balance')) {
               logs.push({
                 type: 'warning',
-                message: `💡 Signal found for ${sym}! Binance Spot Wallet mein balance kam hai ($0 USDT). Balance add karein ya Demo mode on karein.`
+                message: `💡 Signal detected for ${sym}! Insufficient Binance Spot balance ($0 USDT available).`
               });
             } else {
               logs.push({
